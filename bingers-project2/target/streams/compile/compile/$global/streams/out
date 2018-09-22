@@ -1,0 +1,10 @@
+[0m[[0m[31merror[0m] [0m[0m/Users/bingerso/GitHub-Projects/csc750-project2/bingers-project2/app/controllers/HomeController.java:8:1: package play.db does not exist[0m
+[0m[[0m[31merror[0m] [0m[0mimport play.db.*;[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/bingerso/GitHub-Projects/csc750-project2/bingers-project2/app/controllers/HomeController.java:20:1: cannot find symbol[0m
+[0m[[0m[31merror[0m] [0m[0m  symbol:   class Database[0m
+[0m[[0m[31merror[0m] [0m[0m  location: class controllers.HomeController[0m
+[0m[[0m[31merror[0m] [0m[0m    final Database db;[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/bingerso/GitHub-Projects/csc750-project2/bingers-project2/app/controllers/HomeController.java:34:1: cannot find symbol[0m
+[0m[[0m[31merror[0m] [0m[0m  symbol:   class Database[0m
+[0m[[0m[31merror[0m] [0m[0m  location: class controllers.HomeController[0m
+[0m[[0m[31merror[0m] [0m[0m    public HomeController(ActorSystem system, Database db) {[0m

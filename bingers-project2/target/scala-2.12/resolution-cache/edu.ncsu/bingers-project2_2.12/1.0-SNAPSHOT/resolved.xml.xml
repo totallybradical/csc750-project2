@@ -4,7 +4,7 @@
 		module="bingers-project2_2.12"
 		revision="1.0-SNAPSHOT"
 		status="integration"
-		publication="20180922114813"
+		publication="20180922180306"
 	>
 		<description>
 		bingers-project2
@@ -50,5 +50,8 @@
 		<dependency org="com.typesafe.play" name="play-logback_2.12" rev="2.6.18" conf="compile->default(compile)"/>
 		<dependency org="com.typesafe.play" name="play-akka-http-server_2.12" rev="2.6.18" conf="compile->default(compile)"/>
 		<dependency org="com.typesafe.play" name="play-guice_2.12" rev="2.6.18" conf="compile->default(compile)"/>
+		<dependency org="com.fasterxml.jackson.core" name="jackson-core" rev="2.8.7" conf="compile->default(compile)"/>
+		<dependency org="com.typesafe.play" name="play-java-jdbc_2.12" rev="2.6.18" conf="compile->default(compile)"/>
+		<dependency org="org.xerial" name="sqlite-jdbc" rev="3.8.6" conf="compile->default(compile)"/>
 	</dependencies>
 </ivy-module>
