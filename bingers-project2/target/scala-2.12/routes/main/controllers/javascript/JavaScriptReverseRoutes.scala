@@ -1,6 +1,6 @@
 // @GENERATOR:play-routes-compiler
 // @SOURCE:/Users/bingerso/GitHub-Projects/csc750-project2/bingers-project2/conf/routes
-// @DATE:Sat Sep 22 12:40:29 EDT 2018
+// @DATE:Mon Sep 24 21:13:39 EDT 2018
 
 import play.api.routing.JavaScriptReverseRoute
 
@@ -11,7 +11,7 @@ import _root_.play.libs.F
 // @LINE:6
 package controllers.javascript {
 
-  // @LINE:6
+  // @LINE:13
   class ReverseHomeController(_prefix: => String) {
 
     def _defaultPrefix: String = {
@@ -19,7 +19,7 @@ package controllers.javascript {
     }
 
   
-    // @LINE:31
+    // @LINE:28
     def getSellOffer: JavaScriptReverseRoute = JavaScriptReverseRoute(
       "controllers.HomeController.getSellOffer",
       """
@@ -29,9 +29,9 @@ package controllers.javascript {
       """
     )
   
-    // @LINE:22
-    def getTransactions: JavaScriptReverseRoute = JavaScriptReverseRoute(
-      "controllers.HomeController.getTransactions",
+    // @LINE:19
+    def getTransactionIDs: JavaScriptReverseRoute = JavaScriptReverseRoute(
+      "controllers.HomeController.getTransactionIDs",
       """
         function() {
           return _wA({method:"GET", url:"""" + _prefix + { _defaultPrefix } + """" + "transactions"})
@@ -39,9 +39,9 @@ package controllers.javascript {
       """
     )
   
-    // @LINE:19
-    def getBalance: JavaScriptReverseRoute = JavaScriptReverseRoute(
-      "controllers.HomeController.getBalance",
+    // @LINE:16
+    def getBalances: JavaScriptReverseRoute = JavaScriptReverseRoute(
+      "controllers.HomeController.getBalances",
       """
         function() {
           return _wA({method:"GET", url:"""" + _prefix + { _defaultPrefix } + """" + "getbalance"})
@@ -49,7 +49,7 @@ package controllers.javascript {
       """
     )
   
-    // @LINE:45
+    // @LINE:42
     def debugReset: JavaScriptReverseRoute = JavaScriptReverseRoute(
       "controllers.HomeController.debugReset",
       """
@@ -59,7 +59,17 @@ package controllers.javascript {
       """
     )
   
-    // @LINE:42
+    // @LINE:13
+    def addBalanceUSD: JavaScriptReverseRoute = JavaScriptReverseRoute(
+      "controllers.HomeController.addBalanceUSD",
+      """
+        function(amount0) {
+          return _wA({method:"POST", url:"""" + _prefix + { _defaultPrefix } + """" + "addbalance/usd/" + encodeURIComponent((""" + implicitly[play.api.mvc.PathBindable[Double]].javascriptUnbind + """)("amount", amount0))})
+        }
+      """
+    )
+  
+    // @LINE:39
     def debugConfirmNoResponse: JavaScriptReverseRoute = JavaScriptReverseRoute(
       "controllers.HomeController.debugConfirmNoResponse",
       """
@@ -69,17 +79,7 @@ package controllers.javascript {
       """
     )
   
-    // @LINE:16
-    def addBalance: JavaScriptReverseRoute = JavaScriptReverseRoute(
-      "controllers.HomeController.addBalance",
-      """
-        function(amount0) {
-          return _wA({method:"POST", url:"""" + _prefix + { _defaultPrefix } + """" + "addbalance/usd/" + encodeURIComponent((""" + implicitly[play.api.mvc.PathBindable[Double]].javascriptUnbind + """)("amount", amount0))})
-        }
-      """
-    )
-  
-    // @LINE:39
+    // @LINE:36
     def debugConfirmFail: JavaScriptReverseRoute = JavaScriptReverseRoute(
       "controllers.HomeController.debugConfirmFail",
       """
@@ -90,6 +90,16 @@ package controllers.javascript {
     )
   
     // @LINE:25
+    def getSellOfferIDs: JavaScriptReverseRoute = JavaScriptReverseRoute(
+      "controllers.HomeController.getSellOfferIDs",
+      """
+        function() {
+          return _wA({method:"GET", url:"""" + _prefix + { _defaultPrefix } + """" + "selloffers"})
+        }
+      """
+    )
+  
+    // @LINE:22
     def getTransaction: JavaScriptReverseRoute = JavaScriptReverseRoute(
       "controllers.HomeController.getTransaction",
       """
@@ -99,27 +109,7 @@ package controllers.javascript {
       """
     )
   
-    // @LINE:28
-    def getSellOffers: JavaScriptReverseRoute = JavaScriptReverseRoute(
-      "controllers.HomeController.getSellOffers",
-      """
-        function() {
-          return _wA({method:"GET", url:"""" + _prefix + { _defaultPrefix } + """" + "selloffers"})
-        }
-      """
-    )
-  
-    // @LINE:6
-    def index: JavaScriptReverseRoute = JavaScriptReverseRoute(
-      "controllers.HomeController.index",
-      """
-        function() {
-          return _wA({method:"GET", url:"""" + _prefix + """"})
-        }
-      """
-    )
-  
-    // @LINE:34
+    // @LINE:31
     def requestBuyTransaction: JavaScriptReverseRoute = JavaScriptReverseRoute(
       "controllers.HomeController.requestBuyTransaction",
       """
@@ -131,7 +121,7 @@ package controllers.javascript {
   
   }
 
-  // @LINE:9
+  // @LINE:6
   class ReverseAssets(_prefix: => String) {
 
     def _defaultPrefix: String = {
@@ -139,7 +129,7 @@ package controllers.javascript {
     }
 
   
-    // @LINE:9
+    // @LINE:6
     def versioned: JavaScriptReverseRoute = JavaScriptReverseRoute(
       "controllers.Assets.versioned",
       """

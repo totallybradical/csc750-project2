@@ -2,9 +2,6 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# An example controller showing a sample home page
-GET     /                           controllers.HomeController.index
-
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
@@ -13,19 +10,19 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 # - Main API -
 
 # Add the given amount to the user's USD balance
-POST    /addbalance/usd/:amount                 controllers.HomeController.addBalance(amount: Double)
+POST    /addbalance/usd/:amount                 controllers.HomeController.addBalanceUSD(amount: Double)
 
 # Return the user's USD and BTC balance
-GET     /getbalance                             controllers.HomeController.getBalance
+GET     /getbalance                             controllers.HomeController.getBalances
 
 # Get a list of successful transactions
-GET     /transactions                           controllers.HomeController.getTransactions
+GET     /transactions                           controllers.HomeController.getTransactionIDs
 
 # Get details of a given transaction
 GET     /transactions/:transactionID            controllers.HomeController.getTransaction(transactionID: Int)
 
 # Get a list of sell Offer IDs
-GET     /selloffers                             controllers.HomeController.getSellOffers
+GET     /selloffers                             controllers.HomeController.getSellOfferIDs
 
 # Get sell offer details
 GET     /selloffers/:offerID                    controllers.HomeController.getSellOffer(offerID: String)

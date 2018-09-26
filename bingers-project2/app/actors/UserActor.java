@@ -1,54 +1,82 @@
 package actors;
 
+import actors.UserActorProtocol.*;
 import akka.actor.*;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import play.libs.Json;
 
 public class UserActor extends AbstractActor {
+    private final LoggingAdapter log = Logging.getLogger(getContext().getSystem(), this);
 
-    public static Props getProps() {
-        return Props.create(UserActor.class);
+    final int userID;
+    final double usdBalance;
+    final double btcBalance;
+
+    public UserActor(int userID, double usdBalance, double btcBalance) {
+        this.userID = userID;
+        this.usdBalance = usdBalance;
+        this.btcBalance = btcBalance;
+    }
+
+    public static Props props(int userID, double usdBalance, double btcBalance) {
+        return Props.create(UserActor.class, userID, usdBalance, btcBalance);
+    }
+
+    @Override
+    public void preStart() {
+        log.info("UserActor {} started with USD: {} and BTC: {}", userID, usdBalance, btcBalance);
+    }
+
+    @Override
+    public void postStop() {
+        log.info("UserActor {} stopped with USD: {} and BTC: {}", userID, usdBalance, btcBalance);
     }
 
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-//                .match(GetFlights.class, getFlights -> {
-//                    ObjectNode result = Json.newObject();
-//                    result.put("status", "success");
-//                    result.putArray("flights").addAll(getFlights.flights);
-//                    sender().tell(result, self());
-//                })
-//                .match(GetFlight.class, getFlight -> {
-//                    ObjectNode result = Json.newObject();
-//                    result.put("status", "success");
-//                    result.put("seats", getFlight.seats_avail);
-//                    sender().tell(result, self());
-//                })
-//                .match(GetStatus.class, getStatus -> {
-//                    ObjectNode result = Json.newObject();
-//                    result.put("status", "success");
-//                    result.put("confirmFail", this.confirmFail);
-//                    result.put("confirmNoResponse", this.confirmNoResponse);
-//                    sender().tell(result, self());
-//                })
-//                .match(ConfirmFail.class, confirmFail -> {
-//                    this.confirmFail = true;
-//                    ObjectNode result = Json.newObject();
-//                    result.put("status", "success");
-//                    sender().tell(result, self());
-//                })
-//                .match(ConfirmNoResponse.class, confirmNoResponse -> {
-//                    this.confirmNoResponse = true;
-//                    ObjectNode result = Json.newObject();
-//                    result.put("status", "success");
-//                    sender().tell(result, self());
-//                })
-//                .match(Reset.class, Reset -> {
-//                    this.confirmFail = false;
-//                    this.confirmNoResponse = false;
-//                    ObjectNode result = Json.newObject();
-//                    result.put("status", "success");
-//                    sender().tell(result, self());
-//                })
+                .match(AddBalanceUSD.class, this::addBalanceUSD)
+                .match(GetBalances.class, this::getBalances)
+                .match(RequestBuyTransaction.class, this::requestBuyTransaction)
                 .build();
+    }
+
+    private void addBalanceUSD(AddBalanceUSD addBalanceUSD) {
+        log.info("Adding to balance...");
+        System.out.println("Adding to balance...");
+        ObjectNode result = Json.newObject();
+        result.put("status", addBalanceUSD.status);
+        // Error Handling
+        if (addBalanceUSD.status.equals("exception")) {
+            result.put("errorMessage", addBalanceUSD.errorMessage);
+        }
+        sender().tell(result, self());
+    }
+
+    private void getBalances(GetBalances getBalances) {
+        log.info("Balance requested...");
+        System.out.println("Balance requested...");
+        ObjectNode result = Json.newObject();
+        result.put("status", getBalances.status);
+        // Error Handling
+        if (getBalances.status.equals("exception")) {
+            result.put("errorMessage", getBalances.errorMessage);
+        } else {
+            result.put("usd", getBalances.usdBalance);
+            result.put("btc", getBalances.btcBalance);
+        }
+        sender().tell(result, self());
+    }
+
+    private void requestBuyTransaction(RequestBuyTransaction requestBuyTransaction) {
+        log.info("Requesting buy transaction...");
+        System.out.println("Requesting buy transaction...");
+        ObjectNode result = Json.newObject();
+        result.put("status", requestBuyTransaction.status);
+        result.put("offers", requestBuyTransaction.sellOffers);
+        result.putArray("purchaseBreakdown").addAll(requestBuyTransaction.purchaseBreakdown);
+        sender().tell(result, self());
     }
 }

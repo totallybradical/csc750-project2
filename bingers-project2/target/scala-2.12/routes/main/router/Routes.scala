@@ -1,6 +1,6 @@
 // @GENERATOR:play-routes-compiler
 // @SOURCE:/Users/bingerso/GitHub-Projects/csc750-project2/bingers-project2/conf/routes
-// @DATE:Sat Sep 22 12:40:29 EDT 2018
+// @DATE:Mon Sep 24 21:13:39 EDT 2018
 
 package router
 
@@ -15,23 +15,23 @@ import _root_.play.libs.F
 class Routes(
   override val errorHandler: play.api.http.HttpErrorHandler, 
   // @LINE:6
-  HomeController_0: controllers.HomeController,
-  // @LINE:9
   Assets_1: controllers.Assets,
+  // @LINE:13
+  HomeController_0: controllers.HomeController,
   val prefix: String
 ) extends GeneratedRouter {
 
    @javax.inject.Inject()
    def this(errorHandler: play.api.http.HttpErrorHandler,
     // @LINE:6
-    HomeController_0: controllers.HomeController,
-    // @LINE:9
-    Assets_1: controllers.Assets
-  ) = this(errorHandler, HomeController_0, Assets_1, "/")
+    Assets_1: controllers.Assets,
+    // @LINE:13
+    HomeController_0: controllers.HomeController
+  ) = this(errorHandler, Assets_1, HomeController_0, "/")
 
   def withPrefix(prefix: String): Routes = {
     router.RoutesPrefix.setPrefix(prefix)
-    new Routes(errorHandler, HomeController_0, Assets_1, prefix)
+    new Routes(errorHandler, Assets_1, HomeController_0, prefix)
   }
 
   private[this] val defaultPrefix: String = {
@@ -39,13 +39,12 @@ class Routes(
   }
 
   def documentation = List(
-    ("""GET""", this.prefix, """controllers.HomeController.index"""),
     ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """assets/""" + "$" + """file<.+>""", """controllers.Assets.versioned(path:String = "/public", file:Asset)"""),
-    ("""POST""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """addbalance/usd/""" + "$" + """amount<[^/]+>""", """controllers.HomeController.addBalance(amount:Double)"""),
-    ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """getbalance""", """controllers.HomeController.getBalance"""),
-    ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """transactions""", """controllers.HomeController.getTransactions"""),
+    ("""POST""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """addbalance/usd/""" + "$" + """amount<[^/]+>""", """controllers.HomeController.addBalanceUSD(amount:Double)"""),
+    ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """getbalance""", """controllers.HomeController.getBalances"""),
+    ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """transactions""", """controllers.HomeController.getTransactionIDs"""),
     ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """transactions/""" + "$" + """transactionID<[^/]+>""", """controllers.HomeController.getTransaction(transactionID:Int)"""),
-    ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """selloffers""", """controllers.HomeController.getSellOffers"""),
+    ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """selloffers""", """controllers.HomeController.getSellOfferIDs"""),
     ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """selloffers/""" + "$" + """offerID<[^/]+>""", """controllers.HomeController.getSellOffer(offerID:String)"""),
     ("""POST""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """buy/""" + "$" + """maxRate<[^/]+>/""" + "$" + """amount<[^/]+>""", """controllers.HomeController.requestBuyTransaction(maxRate:Double, amount:Int)"""),
     ("""POST""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """debug/confirm_fail""", """controllers.HomeController.debugConfirmFail"""),
@@ -59,28 +58,10 @@ class Routes(
 
 
   // @LINE:6
-  private[this] lazy val controllers_HomeController_index0_route = Route("GET",
-    PathPattern(List(StaticPart(this.prefix)))
-  )
-  private[this] lazy val controllers_HomeController_index0_invoker = createInvoker(
-    HomeController_0.index,
-    play.api.routing.HandlerDef(this.getClass.getClassLoader,
-      "router",
-      "controllers.HomeController",
-      "index",
-      Nil,
-      "GET",
-      this.prefix + """""",
-      """ An example controller showing a sample home page""",
-      Seq()
-    )
-  )
-
-  // @LINE:9
-  private[this] lazy val controllers_Assets_versioned1_route = Route("GET",
+  private[this] lazy val controllers_Assets_versioned0_route = Route("GET",
     PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("assets/"), DynamicPart("file", """.+""",false)))
   )
-  private[this] lazy val controllers_Assets_versioned1_invoker = createInvoker(
+  private[this] lazy val controllers_Assets_versioned0_invoker = createInvoker(
     Assets_1.versioned(fakeValue[String], fakeValue[Asset]),
     play.api.routing.HandlerDef(this.getClass.getClassLoader,
       "router",
@@ -94,16 +75,16 @@ class Routes(
     )
   )
 
-  // @LINE:16
-  private[this] lazy val controllers_HomeController_addBalance2_route = Route("POST",
+  // @LINE:13
+  private[this] lazy val controllers_HomeController_addBalanceUSD1_route = Route("POST",
     PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("addbalance/usd/"), DynamicPart("amount", """[^/]+""",true)))
   )
-  private[this] lazy val controllers_HomeController_addBalance2_invoker = createInvoker(
-    HomeController_0.addBalance(fakeValue[Double]),
+  private[this] lazy val controllers_HomeController_addBalanceUSD1_invoker = createInvoker(
+    HomeController_0.addBalanceUSD(fakeValue[Double]),
     play.api.routing.HandlerDef(this.getClass.getClassLoader,
       "router",
       "controllers.HomeController",
-      "addBalance",
+      "addBalanceUSD",
       Seq(classOf[Double]),
       "POST",
       this.prefix + """addbalance/usd/""" + "$" + """amount<[^/]+>""",
@@ -112,16 +93,16 @@ class Routes(
     )
   )
 
-  // @LINE:19
-  private[this] lazy val controllers_HomeController_getBalance3_route = Route("GET",
+  // @LINE:16
+  private[this] lazy val controllers_HomeController_getBalances2_route = Route("GET",
     PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("getbalance")))
   )
-  private[this] lazy val controllers_HomeController_getBalance3_invoker = createInvoker(
-    HomeController_0.getBalance,
+  private[this] lazy val controllers_HomeController_getBalances2_invoker = createInvoker(
+    HomeController_0.getBalances,
     play.api.routing.HandlerDef(this.getClass.getClassLoader,
       "router",
       "controllers.HomeController",
-      "getBalance",
+      "getBalances",
       Nil,
       "GET",
       this.prefix + """getbalance""",
@@ -130,16 +111,16 @@ class Routes(
     )
   )
 
-  // @LINE:22
-  private[this] lazy val controllers_HomeController_getTransactions4_route = Route("GET",
+  // @LINE:19
+  private[this] lazy val controllers_HomeController_getTransactionIDs3_route = Route("GET",
     PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("transactions")))
   )
-  private[this] lazy val controllers_HomeController_getTransactions4_invoker = createInvoker(
-    HomeController_0.getTransactions,
+  private[this] lazy val controllers_HomeController_getTransactionIDs3_invoker = createInvoker(
+    HomeController_0.getTransactionIDs,
     play.api.routing.HandlerDef(this.getClass.getClassLoader,
       "router",
       "controllers.HomeController",
-      "getTransactions",
+      "getTransactionIDs",
       Nil,
       "GET",
       this.prefix + """transactions""",
@@ -148,11 +129,11 @@ class Routes(
     )
   )
 
-  // @LINE:25
-  private[this] lazy val controllers_HomeController_getTransaction5_route = Route("GET",
+  // @LINE:22
+  private[this] lazy val controllers_HomeController_getTransaction4_route = Route("GET",
     PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("transactions/"), DynamicPart("transactionID", """[^/]+""",true)))
   )
-  private[this] lazy val controllers_HomeController_getTransaction5_invoker = createInvoker(
+  private[this] lazy val controllers_HomeController_getTransaction4_invoker = createInvoker(
     HomeController_0.getTransaction(fakeValue[Int]),
     play.api.routing.HandlerDef(this.getClass.getClassLoader,
       "router",
@@ -166,16 +147,16 @@ class Routes(
     )
   )
 
-  // @LINE:28
-  private[this] lazy val controllers_HomeController_getSellOffers6_route = Route("GET",
+  // @LINE:25
+  private[this] lazy val controllers_HomeController_getSellOfferIDs5_route = Route("GET",
     PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("selloffers")))
   )
-  private[this] lazy val controllers_HomeController_getSellOffers6_invoker = createInvoker(
-    HomeController_0.getSellOffers,
+  private[this] lazy val controllers_HomeController_getSellOfferIDs5_invoker = createInvoker(
+    HomeController_0.getSellOfferIDs,
     play.api.routing.HandlerDef(this.getClass.getClassLoader,
       "router",
       "controllers.HomeController",
-      "getSellOffers",
+      "getSellOfferIDs",
       Nil,
       "GET",
       this.prefix + """selloffers""",
@@ -184,11 +165,11 @@ class Routes(
     )
   )
 
-  // @LINE:31
-  private[this] lazy val controllers_HomeController_getSellOffer7_route = Route("GET",
+  // @LINE:28
+  private[this] lazy val controllers_HomeController_getSellOffer6_route = Route("GET",
     PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("selloffers/"), DynamicPart("offerID", """[^/]+""",true)))
   )
-  private[this] lazy val controllers_HomeController_getSellOffer7_invoker = createInvoker(
+  private[this] lazy val controllers_HomeController_getSellOffer6_invoker = createInvoker(
     HomeController_0.getSellOffer(fakeValue[String]),
     play.api.routing.HandlerDef(this.getClass.getClassLoader,
       "router",
@@ -202,11 +183,11 @@ class Routes(
     )
   )
 
-  // @LINE:34
-  private[this] lazy val controllers_HomeController_requestBuyTransaction8_route = Route("POST",
+  // @LINE:31
+  private[this] lazy val controllers_HomeController_requestBuyTransaction7_route = Route("POST",
     PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("buy/"), DynamicPart("maxRate", """[^/]+""",true), StaticPart("/"), DynamicPart("amount", """[^/]+""",true)))
   )
-  private[this] lazy val controllers_HomeController_requestBuyTransaction8_invoker = createInvoker(
+  private[this] lazy val controllers_HomeController_requestBuyTransaction7_invoker = createInvoker(
     HomeController_0.requestBuyTransaction(fakeValue[Double], fakeValue[Int]),
     play.api.routing.HandlerDef(this.getClass.getClassLoader,
       "router",
@@ -220,11 +201,11 @@ class Routes(
     )
   )
 
-  // @LINE:39
-  private[this] lazy val controllers_HomeController_debugConfirmFail9_route = Route("POST",
+  // @LINE:36
+  private[this] lazy val controllers_HomeController_debugConfirmFail8_route = Route("POST",
     PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("debug/confirm_fail")))
   )
-  private[this] lazy val controllers_HomeController_debugConfirmFail9_invoker = createInvoker(
+  private[this] lazy val controllers_HomeController_debugConfirmFail8_invoker = createInvoker(
     HomeController_0.debugConfirmFail,
     play.api.routing.HandlerDef(this.getClass.getClassLoader,
       "router",
@@ -238,11 +219,11 @@ class Routes(
     )
   )
 
-  // @LINE:42
-  private[this] lazy val controllers_HomeController_debugConfirmNoResponse10_route = Route("POST",
+  // @LINE:39
+  private[this] lazy val controllers_HomeController_debugConfirmNoResponse9_route = Route("POST",
     PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("debug/confirm_no_response")))
   )
-  private[this] lazy val controllers_HomeController_debugConfirmNoResponse10_invoker = createInvoker(
+  private[this] lazy val controllers_HomeController_debugConfirmNoResponse9_invoker = createInvoker(
     HomeController_0.debugConfirmNoResponse,
     play.api.routing.HandlerDef(this.getClass.getClassLoader,
       "router",
@@ -256,11 +237,11 @@ class Routes(
     )
   )
 
-  // @LINE:45
-  private[this] lazy val controllers_HomeController_debugReset11_route = Route("POST",
+  // @LINE:42
+  private[this] lazy val controllers_HomeController_debugReset10_route = Route("POST",
     PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("debug/reset")))
   )
-  private[this] lazy val controllers_HomeController_debugReset11_invoker = createInvoker(
+  private[this] lazy val controllers_HomeController_debugReset10_invoker = createInvoker(
     HomeController_0.debugReset,
     play.api.routing.HandlerDef(this.getClass.getClassLoader,
       "router",
@@ -278,75 +259,69 @@ class Routes(
   def routes: PartialFunction[RequestHeader, Handler] = {
   
     // @LINE:6
-    case controllers_HomeController_index0_route(params@_) =>
-      call { 
-        controllers_HomeController_index0_invoker.call(HomeController_0.index)
+    case controllers_Assets_versioned0_route(params@_) =>
+      call(Param[String]("path", Right("/public")), params.fromPath[Asset]("file", None)) { (path, file) =>
+        controllers_Assets_versioned0_invoker.call(Assets_1.versioned(path, file))
       }
   
-    // @LINE:9
-    case controllers_Assets_versioned1_route(params@_) =>
-      call(Param[String]("path", Right("/public")), params.fromPath[Asset]("file", None)) { (path, file) =>
-        controllers_Assets_versioned1_invoker.call(Assets_1.versioned(path, file))
+    // @LINE:13
+    case controllers_HomeController_addBalanceUSD1_route(params@_) =>
+      call(params.fromPath[Double]("amount", None)) { (amount) =>
+        controllers_HomeController_addBalanceUSD1_invoker.call(HomeController_0.addBalanceUSD(amount))
       }
   
     // @LINE:16
-    case controllers_HomeController_addBalance2_route(params@_) =>
-      call(params.fromPath[Double]("amount", None)) { (amount) =>
-        controllers_HomeController_addBalance2_invoker.call(HomeController_0.addBalance(amount))
+    case controllers_HomeController_getBalances2_route(params@_) =>
+      call { 
+        controllers_HomeController_getBalances2_invoker.call(HomeController_0.getBalances)
       }
   
     // @LINE:19
-    case controllers_HomeController_getBalance3_route(params@_) =>
+    case controllers_HomeController_getTransactionIDs3_route(params@_) =>
       call { 
-        controllers_HomeController_getBalance3_invoker.call(HomeController_0.getBalance)
+        controllers_HomeController_getTransactionIDs3_invoker.call(HomeController_0.getTransactionIDs)
       }
   
     // @LINE:22
-    case controllers_HomeController_getTransactions4_route(params@_) =>
-      call { 
-        controllers_HomeController_getTransactions4_invoker.call(HomeController_0.getTransactions)
+    case controllers_HomeController_getTransaction4_route(params@_) =>
+      call(params.fromPath[Int]("transactionID", None)) { (transactionID) =>
+        controllers_HomeController_getTransaction4_invoker.call(HomeController_0.getTransaction(transactionID))
       }
   
     // @LINE:25
-    case controllers_HomeController_getTransaction5_route(params@_) =>
-      call(params.fromPath[Int]("transactionID", None)) { (transactionID) =>
-        controllers_HomeController_getTransaction5_invoker.call(HomeController_0.getTransaction(transactionID))
+    case controllers_HomeController_getSellOfferIDs5_route(params@_) =>
+      call { 
+        controllers_HomeController_getSellOfferIDs5_invoker.call(HomeController_0.getSellOfferIDs)
       }
   
     // @LINE:28
-    case controllers_HomeController_getSellOffers6_route(params@_) =>
-      call { 
-        controllers_HomeController_getSellOffers6_invoker.call(HomeController_0.getSellOffers)
+    case controllers_HomeController_getSellOffer6_route(params@_) =>
+      call(params.fromPath[String]("offerID", None)) { (offerID) =>
+        controllers_HomeController_getSellOffer6_invoker.call(HomeController_0.getSellOffer(offerID))
       }
   
     // @LINE:31
-    case controllers_HomeController_getSellOffer7_route(params@_) =>
-      call(params.fromPath[String]("offerID", None)) { (offerID) =>
-        controllers_HomeController_getSellOffer7_invoker.call(HomeController_0.getSellOffer(offerID))
+    case controllers_HomeController_requestBuyTransaction7_route(params@_) =>
+      call(params.fromPath[Double]("maxRate", None), params.fromPath[Int]("amount", None)) { (maxRate, amount) =>
+        controllers_HomeController_requestBuyTransaction7_invoker.call(HomeController_0.requestBuyTransaction(maxRate, amount))
       }
   
-    // @LINE:34
-    case controllers_HomeController_requestBuyTransaction8_route(params@_) =>
-      call(params.fromPath[Double]("maxRate", None), params.fromPath[Int]("amount", None)) { (maxRate, amount) =>
-        controllers_HomeController_requestBuyTransaction8_invoker.call(HomeController_0.requestBuyTransaction(maxRate, amount))
+    // @LINE:36
+    case controllers_HomeController_debugConfirmFail8_route(params@_) =>
+      call { 
+        controllers_HomeController_debugConfirmFail8_invoker.call(HomeController_0.debugConfirmFail)
       }
   
     // @LINE:39
-    case controllers_HomeController_debugConfirmFail9_route(params@_) =>
+    case controllers_HomeController_debugConfirmNoResponse9_route(params@_) =>
       call { 
-        controllers_HomeController_debugConfirmFail9_invoker.call(HomeController_0.debugConfirmFail)
+        controllers_HomeController_debugConfirmNoResponse9_invoker.call(HomeController_0.debugConfirmNoResponse)
       }
   
     // @LINE:42
-    case controllers_HomeController_debugConfirmNoResponse10_route(params@_) =>
+    case controllers_HomeController_debugReset10_route(params@_) =>
       call { 
-        controllers_HomeController_debugConfirmNoResponse10_invoker.call(HomeController_0.debugConfirmNoResponse)
-      }
-  
-    // @LINE:45
-    case controllers_HomeController_debugReset11_route(params@_) =>
-      call { 
-        controllers_HomeController_debugReset11_invoker.call(HomeController_0.debugReset)
+        controllers_HomeController_debugReset10_invoker.call(HomeController_0.debugReset)
       }
   }
 }
