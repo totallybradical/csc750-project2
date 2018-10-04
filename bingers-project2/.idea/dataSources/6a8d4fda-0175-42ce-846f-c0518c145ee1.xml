@@ -13,169 +13,191 @@
     <collation id="5" parent="1" name="RTRIM"/>
     <table id="6" parent="2" name="accounts"/>
     <table id="7" parent="2" name="eventslog"/>
-    <table id="8" parent="2" name="orderbook"/>
-    <table id="9" parent="2" name="sqlite_master">
+    <table id="8" parent="2" name="holds"/>
+    <table id="9" parent="2" name="orderbook"/>
+    <table id="10" parent="2" name="sqlite_master">
       <System>1</System>
     </table>
-    <table id="10" parent="2" name="sqlite_sequence">
+    <table id="11" parent="2" name="sqlite_sequence">
       <System>1</System>
     </table>
-    <table id="11" parent="2" name="transactions"/>
-    <table id="12" parent="2" name="users"/>
-    <column id="13" parent="6" name="id">
+    <table id="12" parent="2" name="transactions"/>
+    <table id="13" parent="2" name="users"/>
+    <column id="14" parent="6" name="id">
       <Position>1</Position>
       <DataType>INTEGER|0s</DataType>
       <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="14" parent="6" name="userID">
+    <column id="15" parent="6" name="userID">
       <Position>2</Position>
       <DataType>INTEGER|0s</DataType>
     </column>
-    <column id="15" parent="6" name="accountType">
+    <column id="16" parent="6" name="accountType">
       <Position>3</Position>
       <DataType>TEXT|0s</DataType>
     </column>
-    <column id="16" parent="6" name="balance">
+    <column id="17" parent="6" name="balance">
       <Position>4</Position>
       <DataType>REAL|0s</DataType>
       <DefaultExpression>0.0</DefaultExpression>
     </column>
-    <index id="17" parent="6" name="sqlite_autoindex_accounts_1">
+    <index id="18" parent="6" name="sqlite_autoindex_accounts_1">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>userID
 accountType</ColNames>
       <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
-    <key id="18" parent="6">
+    <key id="19" parent="6">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="19" parent="6">
+    <key id="20" parent="6">
       <ColNames>userID
 accountType</ColNames>
       <UnderlyingIndexName>sqlite_autoindex_accounts_1</UnderlyingIndexName>
     </key>
-    <foreign-key id="20" parent="6" name="accounts_userID_fk">
+    <foreign-key id="21" parent="6" name="accounts_userID_fk">
       <ColNames>userID</ColNames>
       <RefTableName>users</RefTableName>
       <RefColNames>id</RefColNames>
       <OnDelete>cascade</OnDelete>
       <OnUpdate>cascade</OnUpdate>
     </foreign-key>
-    <check id="21" parent="6">
+    <check id="22" parent="6">
       <Predicate>accountType = &quot;usd&quot; OR accountType = &quot;btc&quot;</Predicate>
     </check>
-    <column id="22" parent="7" name="id">
+    <column id="23" parent="7" name="id">
       <Position>1</Position>
       <DataType>INTEGER|0s</DataType>
       <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="23" parent="7" name="timestamp">
+    <column id="24" parent="7" name="timestamp">
       <Position>2</Position>
       <DataType>DATETIME|0s</DataType>
       <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
     </column>
-    <column id="24" parent="7" name="event_type">
+    <column id="25" parent="7" name="event_type">
       <Position>3</Position>
       <DataType>TEXT|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="25" parent="7" name="notes">
+    <column id="26" parent="7" name="notes">
       <Position>4</Position>
       <DataType>TEXT|0s</DataType>
     </column>
-    <key id="26" parent="7">
+    <key id="27" parent="7">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="27" parent="8" name="id">
+    <column id="28" parent="8" name="id">
       <Position>1</Position>
       <DataType>INTEGER|0s</DataType>
       <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="28" parent="8" name="rate">
+    <column id="29" parent="8" name="offerID">
       <Position>2</Position>
-      <DataType>REAL|0s</DataType>
-      <NotNull>1</NotNull>
+      <DataType>TEXT|0s</DataType>
     </column>
-    <column id="29" parent="8" name="amount">
+    <column id="30" parent="8" name="amount">
       <Position>3</Position>
       <DataType>REAL|0s</DataType>
-      <NotNull>1</NotNull>
     </column>
-    <column id="30" parent="8" name="offerID">
+    <column id="31" parent="8" name="rate">
       <Position>4</Position>
-      <DataType>TEXT|0s</DataType>
-      <NotNull>1</NotNull>
+      <DataType>REAL|0s</DataType>
     </column>
-    <index id="31" parent="8" name="orderbook_offerID_uindex">
-      <ColNames>offerID</ColNames>
-      <ColumnCollations></ColumnCollations>
-      <Unique>1</Unique>
-    </index>
     <key id="32" parent="8">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="33" parent="9" name="type">
-      <Position>1</Position>
-      <DataType>text|0s</DataType>
-    </column>
-    <column id="34" parent="9" name="name">
-      <Position>2</Position>
-      <DataType>text|0s</DataType>
-    </column>
-    <column id="35" parent="9" name="tbl_name">
-      <Position>3</Position>
-      <DataType>text|0s</DataType>
-    </column>
-    <column id="36" parent="9" name="rootpage">
-      <Position>4</Position>
-      <DataType>integer|0s</DataType>
-    </column>
-    <column id="37" parent="9" name="sql">
-      <Position>5</Position>
-      <DataType>text|0s</DataType>
-    </column>
-    <column id="38" parent="10" name="name">
-      <Position>1</Position>
-    </column>
-    <column id="39" parent="10" name="seq">
-      <Position>2</Position>
-    </column>
-    <column id="40" parent="11" name="id">
+    <column id="33" parent="9" name="id">
       <Position>1</Position>
       <DataType>INTEGER|0s</DataType>
       <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="41" parent="11" name="amount">
+    <column id="34" parent="9" name="rate">
       <Position>2</Position>
       <DataType>REAL|0s</DataType>
+      <NotNull>1</NotNull>
     </column>
-    <column id="42" parent="11" name="rate">
+    <column id="35" parent="9" name="amount">
       <Position>3</Position>
       <DataType>REAL|0s</DataType>
+      <NotNull>1</NotNull>
     </column>
-    <key id="43" parent="11">
+    <column id="36" parent="9" name="offerID">
+      <Position>4</Position>
+      <DataType>TEXT|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="37" parent="9" name="orderbook_offerID_uindex">
+      <ColNames>offerID</ColNames>
+      <ColumnCollations></ColumnCollations>
+      <Unique>1</Unique>
+    </index>
+    <key id="38" parent="9">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="44" parent="12" name="id">
+    <column id="39" parent="10" name="type">
+      <Position>1</Position>
+      <DataType>text|0s</DataType>
+    </column>
+    <column id="40" parent="10" name="name">
+      <Position>2</Position>
+      <DataType>text|0s</DataType>
+    </column>
+    <column id="41" parent="10" name="tbl_name">
+      <Position>3</Position>
+      <DataType>text|0s</DataType>
+    </column>
+    <column id="42" parent="10" name="rootpage">
+      <Position>4</Position>
+      <DataType>integer|0s</DataType>
+    </column>
+    <column id="43" parent="10" name="sql">
+      <Position>5</Position>
+      <DataType>text|0s</DataType>
+    </column>
+    <column id="44" parent="11" name="name">
+      <Position>1</Position>
+    </column>
+    <column id="45" parent="11" name="seq">
+      <Position>2</Position>
+    </column>
+    <column id="46" parent="12" name="id">
       <Position>1</Position>
       <DataType>INTEGER|0s</DataType>
       <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="45" parent="12" name="name">
+    <column id="47" parent="12" name="amount">
+      <Position>2</Position>
+      <DataType>REAL|0s</DataType>
+    </column>
+    <column id="48" parent="12" name="rate">
+      <Position>3</Position>
+      <DataType>REAL|0s</DataType>
+    </column>
+    <key id="49" parent="12">
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="50" parent="13" name="id">
+      <Position>1</Position>
+      <DataType>INTEGER|0s</DataType>
+      <SequenceIdentity>1</SequenceIdentity>
+    </column>
+    <column id="51" parent="13" name="name">
       <Position>2</Position>
       <DataType>TEXT|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="46" parent="12" name="email">
+    <column id="52" parent="13" name="email">
       <Position>3</Position>
       <DataType>TEXT|0s</DataType>
     </column>
-    <key id="47" parent="12">
+    <key id="53" parent="13">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>

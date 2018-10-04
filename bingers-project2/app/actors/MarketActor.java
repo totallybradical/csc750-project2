@@ -29,6 +29,8 @@ public class MarketActor extends AbstractActor {
                 .match(GetSellOffers.class, this::getSellOffers)
                 .match(GetSellOfferIDs.class, this::getSellOfferIDs)
                 .match(GetSellOffer.class, this::getSellOffer)
+                .match(CreateHold.class, this::createHold)
+                .match(ConfirmHold.class, this::confirmHold)
                 .build();
     }
 
@@ -117,6 +119,31 @@ public class MarketActor extends AbstractActor {
             // If success transaction
             result.put("amount", getSellOffer.amount);
             result.put("rate", getSellOffer.rate);
+        }
+        sender().tell(result, self());
+    }
+
+    private void createHold(CreateHold createHold) {
+        ObjectNode result = Json.newObject();
+        log.info("Creating hold...");
+        System.out.println("Creating hold...");
+        result.put("status", createHold.status);
+        result.put("holdID", createHold.holdID);
+        // Error Handling
+        if (createHold.status.equals("exception")) {
+            result.put("errorMessage", createHold.errorMessage);
+        }
+        sender().tell(result, self());
+    }
+
+    private void confirmHold(ConfirmHold confirmHold) {
+        ObjectNode result = Json.newObject();
+        log.info("Confirming hold...");
+        System.out.println("Confirming hold...");
+        result.put("status", confirmHold.status);
+        // Error Handling
+        if (confirmHold.status.equals("exception")) {
+            result.put("errorMessage", confirmHold.errorMessage);
         }
         sender().tell(result, self());
     }

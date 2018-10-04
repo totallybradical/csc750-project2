@@ -30,6 +30,8 @@ public class MarketActorProtocol {
                 }
                 // Report success
                 status = "success";
+                // Close connection!
+                conn.close();
             } catch (Exception e) {
                 status = "exception";
                 errorMessage = e.toString();
@@ -68,6 +70,8 @@ public class MarketActorProtocol {
                 if (!status.equals("success") && !status.equals("error")) {
                     status = "transaction ID (" + transactionID + ") not found";
                 }
+                // Close connection!
+                conn.close();
             } catch (Exception e) {
                 status = "exception";
                 errorMessage = e.toString();
@@ -100,6 +104,8 @@ public class MarketActorProtocol {
                 }
                 // Report success
                 status = "success";
+                // Close connection!
+                conn.close();
             } catch (Exception e) {
                 status = "exception";
                 errorMessage = e.toString();
@@ -124,6 +130,8 @@ public class MarketActorProtocol {
                 }
                 // Report success
                 status = "success";
+                // Close connection!
+                conn.close();
             } catch (Exception e) {
                 status = "exception";
                 errorMessage = e.toString();
@@ -151,6 +159,8 @@ public class MarketActorProtocol {
                 }
                 // Report success
                 status = "success";
+                // Close connection!
+                conn.close();
             } catch (Exception e) {
                 status = "exception";
                 errorMessage = e.toString();
@@ -182,6 +192,97 @@ public class MarketActorProtocol {
                 if (!status.equals("success") && !status.equals("error")) {
                     status = "sell offer ID (" + offerID + ") not found";
                 }
+                // Close connection!
+                conn.close();
+            } catch (Exception e) {
+                status = "exception";
+                errorMessage = e.toString();
+            }
+        }
+    }
+
+    // Create hold
+    public static class CreateHold {
+        String status;
+        String errorMessage;
+        int holdID;
+
+        public CreateHold(Database db, String offerID, double amount, double rate) {
+            status = "";
+
+            String queryGetSellOffer = "SELECT * FROM orderbook WHERE offerID = '" + offerID + "';";
+
+            try {
+                Connection conn = db.getConnection();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(queryGetSellOffer);
+                double newAmount;
+                while(rs.next()) {
+                    newAmount = rs.getDouble("amount") - amount;
+                    System.out.println("New amount: " + newAmount);
+                    if (newAmount < 0.0) {
+                        throw new Exception("not enough available");
+                    } else {
+                        // Reduce count in orderbook
+                        String updateSellOffer = "UPDATE orderbook SET amount = " + newAmount + " WHERE offerID='" + offerID + "';";
+                        PreparedStatement pstmt = conn.prepareStatement(updateSellOffer);
+                        pstmt.executeUpdate();
+                        // Store hold info
+                        String insertHold = "INSERT INTO holds (offerID,amount,rate) VALUES ('" + offerID + "'," + amount + "," + rate + ");";
+                        PreparedStatement pstmt2 = conn.prepareStatement(insertHold, Statement.RETURN_GENERATED_KEYS);
+                        pstmt2.executeUpdate();
+                        ResultSet rs2 = pstmt2.getGeneratedKeys();
+                        if (rs2.next()) {
+                            holdID = rs2.getInt(1);
+                        }
+                        status = "success";
+                    }
+                }
+                // Close connection!
+                conn.close();
+            } catch (Exception e) {
+                status = "exception";
+                errorMessage = e.toString();
+            }
+        }
+    }
+
+    // Confirm hold (create transaction)
+    public static class ConfirmHold {
+        String status;
+        String errorMessage;
+
+        public ConfirmHold(Database db, int holdID) {
+            status = "";
+
+            String queryGetOfferID = "SELECT * FROM holds WHERE id=" + holdID + ";";
+            String deleteHold = "DELETE FROM holds WHERE id=" + holdID + ";";
+
+            try {
+                Connection conn = db.getConnection();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(queryGetOfferID);
+                String offerID = "";
+                while (rs.next()) {
+                    offerID = rs.getString("offerID");
+                }
+                String queryEmptyOfferID = "SELECT * FROM orderbook WHERE offerID='" + offerID + "';";
+                Statement stmt2 = conn.createStatement();
+                ResultSet rs2 = stmt2.executeQuery(queryEmptyOfferID);
+                while (rs2.next()) {
+                    if (rs2.getDouble("amount") == 0.0) {
+                        // Remove empty sell offers
+                        String deleteOfferID = "DELETE FROM orderbook WHERE offerID='" + offerID + "';";
+                        PreparedStatement pstmt = conn.prepareStatement(deleteOfferID);
+                        pstmt.executeUpdate();
+                    }
+                }
+                // Delete the hold from the tracker
+                PreparedStatement pstmt2 = conn.prepareStatement(deleteHold);
+                pstmt2.executeUpdate();
+                status = "success";
+                // Close connection!
+                conn.close();
             } catch (Exception e) {
                 status = "exception";
                 errorMessage = e.toString();

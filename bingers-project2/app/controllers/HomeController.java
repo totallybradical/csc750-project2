@@ -42,7 +42,8 @@ public class HomeController extends Controller {
         String clear_transactions_table = "DELETE FROM transactions;";
         String clear_users_table = "DELETE FROM users;";
         String clear_accounts_table = "DELETE FROM accounts;";
-        String reset_counters = "DELETE FROM sqlite_sequence WHERE name='eventslog' OR name='orderbook' OR name='transactions' OR name='users' OR name='accounts';";
+        String clear_holds_table = "DELETE FROM holds;";
+        String reset_counters = "DELETE FROM sqlite_sequence WHERE name='eventslog' OR name='orderbook' OR name='transactions' OR name='users' OR name='accounts' OR name='holds';";
         String initialize_users = "INSERT INTO users (name, email) VALUES ('Bradford Ingersoll', 'bingers@ncsu.edu');";
         String initialize_accounts = "INSERT INTO accounts (userID, accountType, balance) VALUES (1, 'usd', 0.0), (1, 'btc', 0.0);";
         String initialize_orderbook = "INSERT INTO orderbook (rate, amount, offerID) VALUES (100.00, 5.0, '431671cb'), (80.00, 2.0, '16b961ed'), (50.00, 12.0, '1e06381d');";
@@ -50,7 +51,7 @@ public class HomeController extends Controller {
             Connection conn = db.getConnection();
             Statement stmt = conn.createStatement();
             // Clear eventslog table
-            stmt.execute(clear_eventslog_table);
+            // stmt.execute(clear_eventslog_table); // Not clearing per TA comment on Piazza
             // Clear orderbook table
             stmt.execute(clear_orderbook_table);
             // Clear transaction table
@@ -59,6 +60,8 @@ public class HomeController extends Controller {
             stmt.execute(clear_users_table);
             // Clear accounts table
             stmt.execute(clear_accounts_table);
+            // Clear accounts table
+            stmt.execute(clear_holds_table);
             // Reset counters
             stmt.execute(reset_counters);
             // Initialize orderbook table

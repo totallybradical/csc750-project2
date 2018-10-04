@@ -38,6 +38,8 @@ public class UserActor extends AbstractActor {
     public Receive createReceive() {
         return receiveBuilder()
                 .match(AddBalanceUSD.class, this::addBalanceUSD)
+                .match(ReduceBalanceUSD.class, this::reduceBalanceUSD)
+                .match(AddBalanceBTC.class, this::addBalanceBTC)
                 .match(GetBalances.class, this::getBalances)
                 .match(RequestBuyTransaction.class, this::requestBuyTransaction)
                 .build();
@@ -51,6 +53,30 @@ public class UserActor extends AbstractActor {
         // Error Handling
         if (addBalanceUSD.status.equals("exception")) {
             result.put("errorMessage", addBalanceUSD.errorMessage);
+        }
+        sender().tell(result, self());
+    }
+
+    private void reduceBalanceUSD(ReduceBalanceUSD reduceBalanceUSD) {
+        log.info("Reducing balance...");
+        System.out.println("Reducing balance...");
+        ObjectNode result = Json.newObject();
+        result.put("status", reduceBalanceUSD.status);
+        // Error Handling
+        if (reduceBalanceUSD.status.equals("exception")) {
+            result.put("errorMessage", reduceBalanceUSD.errorMessage);
+        }
+        sender().tell(result, self());
+    }
+
+    private void addBalanceBTC(AddBalanceBTC addBalanceBTC) {
+        log.info("Adding to balance...");
+        System.out.println("Adding to balance...");
+        ObjectNode result = Json.newObject();
+        result.put("status", addBalanceBTC.status);
+        // Error Handling
+        if (addBalanceBTC.status.equals("exception")) {
+            result.put("errorMessage", addBalanceBTC.errorMessage);
         }
         sender().tell(result, self());
     }
@@ -75,8 +101,13 @@ public class UserActor extends AbstractActor {
         System.out.println("Requesting buy transaction...");
         ObjectNode result = Json.newObject();
         result.put("status", requestBuyTransaction.status);
-        result.put("offers", requestBuyTransaction.sellOffers);
-        result.putArray("purchaseBreakdown").addAll(requestBuyTransaction.purchaseBreakdown);
+        // Error Handling
+        if (requestBuyTransaction.status.equals("error")) {
+            result.put("errorMessage", requestBuyTransaction.errorMessage);
+        } else {
+            // result.put("offers", requestBuyTransaction.sellOffers);
+            result.putArray("purchaseBreakdown").addAll(requestBuyTransaction.purchaseBreakdown);
+        }
         sender().tell(result, self());
     }
 }
