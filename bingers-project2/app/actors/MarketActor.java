@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import play.libs.Json;
+import scala.collection.script.Remove;
 
 public class MarketActor extends AbstractActor {
     private final LoggingAdapter log = Logging.getLogger(getContext().getSystem(), this);
@@ -30,7 +31,11 @@ public class MarketActor extends AbstractActor {
                 .match(GetSellOfferIDs.class, this::getSellOfferIDs)
                 .match(GetSellOffer.class, this::getSellOffer)
                 .match(CreateHold.class, this::createHold)
+                .match(RemoveHold.class, this::removeHold)
                 .match(ConfirmHold.class, this::confirmHold)
+                .match(DebugConfirmFail.class, this::debugConfirmFail)
+                .match(DebugConfirmNoResponse.class, this::debugConfirmNoResponse)
+                .match(DebugReset.class, this::debugReset)
                 .build();
     }
 
@@ -136,15 +141,54 @@ public class MarketActor extends AbstractActor {
         sender().tell(result, self());
     }
 
+    private void removeHold(RemoveHold removeHold) {
+        ObjectNode result = Json.newObject();
+        log.info("Removing hold...");
+        System.out.println("Removing hold...");
+        result.put("status", removeHold.status);
+        // Error Handling
+        if (removeHold.status.equals("exception")) {
+            result.put("errorMessage", removeHold.errorMessage);
+        }
+        sender().tell(result, self());
+    }
+
     private void confirmHold(ConfirmHold confirmHold) {
         ObjectNode result = Json.newObject();
         log.info("Confirming hold...");
         System.out.println("Confirming hold...");
         result.put("status", confirmHold.status);
+        if (confirmHold.status.equals("confirm_no_response")) {
+            return;
+        }
         // Error Handling
-        if (confirmHold.status.equals("exception")) {
+        if (confirmHold.status.equals("exception") || confirmHold.status.equals("error")) {
             result.put("errorMessage", confirmHold.errorMessage);
         }
+        sender().tell(result, self());
+    }
+
+    private void debugConfirmFail(DebugConfirmFail debugConfirmFail) {
+        ObjectNode result = Json.newObject();
+        log.info("Enabling debug confirm fail...");
+        System.out.println("Enabling debug confirm fail...");
+        result.put("status", debugConfirmFail.status);
+        sender().tell(result, self());
+    }
+
+    private void debugConfirmNoResponse(DebugConfirmNoResponse debugConfirmNoResponse) {
+        ObjectNode result = Json.newObject();
+        log.info("Enabling debug confirm no response...");
+        System.out.println("Enabling debug confirm no response...");
+        result.put("status", debugConfirmNoResponse.status);
+        sender().tell(result, self());
+    }
+
+    private void debugReset(DebugReset debugReset) {
+        ObjectNode result = Json.newObject();
+        log.info("Resetting debug flags to 0...");
+        System.out.println("Resetting debug flags to 0...");
+        result.put("status", debugReset.status);
         sender().tell(result, self());
     }
 }

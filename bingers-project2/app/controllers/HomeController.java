@@ -37,16 +37,18 @@ public class HomeController extends Controller {
 
         // Reset database
         this.db = db;
-        String clear_eventslog_table = "DELETE FROM eventslog;";
+        // String clear_eventslog_table = "DELETE FROM eventslog;"; // Not clearing per TA comment on Piazza
         String clear_orderbook_table = "DELETE FROM orderbook;";
         String clear_transactions_table = "DELETE FROM transactions;";
         String clear_users_table = "DELETE FROM users;";
         String clear_accounts_table = "DELETE FROM accounts;";
         String clear_holds_table = "DELETE FROM holds;";
-        String reset_counters = "DELETE FROM sqlite_sequence WHERE name='eventslog' OR name='orderbook' OR name='transactions' OR name='users' OR name='accounts' OR name='holds';";
+        String clear_debug_table = "DELETE FROM debug;";
+        String reset_counters = "DELETE FROM sqlite_sequence WHERE name='eventslog' OR name='orderbook' OR name='transactions' OR name='users' OR name='accounts' OR name='holds' OR name='debug';";
         String initialize_users = "INSERT INTO users (name, email) VALUES ('Bradford Ingersoll', 'bingers@ncsu.edu');";
         String initialize_accounts = "INSERT INTO accounts (userID, accountType, balance) VALUES (1, 'usd', 0.0), (1, 'btc', 0.0);";
         String initialize_orderbook = "INSERT INTO orderbook (rate, amount, offerID) VALUES (100.00, 5.0, '431671cb'), (80.00, 2.0, '16b961ed'), (50.00, 12.0, '1e06381d');";
+        String initialize_debug = "INSERT INTO debug (flag) VALUES ('confirm_fail'), ('confirm_no_response');";
         try {
             Connection conn = db.getConnection();
             Statement stmt = conn.createStatement();
@@ -62,6 +64,8 @@ public class HomeController extends Controller {
             stmt.execute(clear_accounts_table);
             // Clear accounts table
             stmt.execute(clear_holds_table);
+            // Clear debug table
+            stmt.execute(clear_debug_table);
             // Reset counters
             stmt.execute(reset_counters);
             // Initialize orderbook table
@@ -70,6 +74,8 @@ public class HomeController extends Controller {
             stmt.execute(initialize_users);
             // Initialize accounts table
             stmt.execute(initialize_accounts);
+            // Initialize debug table
+            stmt.execute(initialize_debug);
 
             System.out.println("Database initialized");
         } catch (Exception e) {
@@ -112,21 +118,24 @@ public class HomeController extends Controller {
     }
 
     public CompletionStage<Result> requestBuyTransaction(double maxRate, int amount) {
-        return FutureConverters.toJava(ask(userActor, new UserActorProtocol.RequestBuyTransaction(db, marketActor, maxRate, amount), 1000))
+        return FutureConverters.toJava(ask(userActor, new UserActorProtocol.RequestBuyTransaction(db, marketActor, maxRate, amount), 5000))
                 .thenApply(response -> ok((ObjectNode) response));
     }
 
     // ======= DEBUG FUNCTIONS =======
 
-    public Result debugConfirmFail() {
-        return ok("debug confirm fail requested");
+    public CompletionStage<Result> debugConfirmFail() {
+        return FutureConverters.toJava(ask(marketActor, new MarketActorProtocol.DebugConfirmFail(db), 1000))
+                .thenApply(response -> ok((ObjectNode) response));
     }
 
-    public Result debugConfirmNoResponse() {
-        return ok("debug confirm no response requested");
+    public CompletionStage<Result> debugConfirmNoResponse() {
+        return FutureConverters.toJava(ask(marketActor, new MarketActorProtocol.DebugConfirmNoResponse(db), 1000))
+                .thenApply(response -> ok((ObjectNode) response));
     }
 
-    public Result debugReset() {
-        return ok("debug reset requested");
+    public CompletionStage<Result> debugReset() {
+        return FutureConverters.toJava(ask(marketActor, new MarketActorProtocol.DebugReset(db), 1000))
+                .thenApply(response -> ok((ObjectNode) response));
     }
 }

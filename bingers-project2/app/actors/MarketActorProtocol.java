@@ -7,6 +7,7 @@ import play.libs.Json;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class MarketActorProtocol {
 
@@ -247,6 +248,51 @@ public class MarketActorProtocol {
         }
     }
 
+    // Remove hold
+    public static class RemoveHold {
+        String status;
+        String errorMessage;
+
+        public RemoveHold(Database db, int holdID) {
+            status = "";
+
+            try {
+                Connection conn = db.getConnection();
+                Statement stmt = conn.createStatement();
+
+                String queryGetOfferID = "SELECT * FROM holds WHERE id=" + holdID + ";";
+                String deleteHold = "DELETE FROM holds WHERE id=" + holdID + ";";
+
+                ResultSet rs = stmt.executeQuery(queryGetOfferID);
+                String offerID = "";
+                double holdAmount = 0.0;
+                while (rs.next()) {
+                    offerID = rs.getString("offerID");
+                    holdAmount = rs.getDouble("amount");
+                }
+                // Get current sell offer amount
+                String queryOfferIDAmount = "SELECT * FROM orderbook WHERE offerID='" + offerID + "';";
+                ResultSet rs2 = stmt.executeQuery(queryOfferIDAmount);
+                while (rs2.next()) {
+                    double currentAmount = rs2.getDouble("amount");
+                    double newAmount = currentAmount + holdAmount;
+                    String updateOfferIDAmount = "UPDATE orderbook SET amount = " + newAmount + " WHERE offerID='" + offerID + "';";
+                    PreparedStatement pstmt = conn.prepareStatement(updateOfferIDAmount);
+                    pstmt.executeUpdate();
+                }
+                // Delete the hold from the tracker
+                PreparedStatement pstmt2 = conn.prepareStatement(deleteHold);
+                pstmt2.executeUpdate();
+                status = "success";
+                // Close connection!
+                conn.close();
+            } catch (Exception e) {
+                status = "exception";
+                errorMessage = e.toString();
+            }
+        }
+    }
+
     // Confirm hold (create transaction)
     public static class ConfirmHold {
         String status;
@@ -255,23 +301,45 @@ public class MarketActorProtocol {
         public ConfirmHold(Database db, int holdID) {
             status = "";
 
-            String queryGetOfferID = "SELECT * FROM holds WHERE id=" + holdID + ";";
-            String deleteHold = "DELETE FROM holds WHERE id=" + holdID + ";";
+            String queryDebugConfirmFailState = "SELECT * FROM debug WHERE flag='confirm_fail';";
+            String queryDebugConfirmNoResponseState = "SELECT * FROM debug WHERE flag='confirm_no_response';";
 
             try {
                 Connection conn = db.getConnection();
                 Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(queryGetOfferID);
-                String offerID = "";
+                ResultSet rs = stmt.executeQuery(queryDebugConfirmFailState);
                 while (rs.next()) {
-                    offerID = rs.getString("offerID");
+                    // If confirm_fail enabled
+                    if (rs.getInt("value") == 1) {
+                        status = "error";
+                        errorMessage = "debug confirm_fail enabled";
+                        conn.close();
+                        return;
+                    }
+                }
+                ResultSet rs2 = stmt.executeQuery(queryDebugConfirmNoResponseState);
+                while (rs2.next()) {
+                    // If confirm_no_response enabled
+                    if (rs2.getInt("value") == 1) {
+                        status = "confirm_no_response";
+                        conn.close();
+                        return;
+                    }
+                }
+
+                String queryGetOfferID = "SELECT * FROM holds WHERE id=" + holdID + ";";
+                String deleteHold = "DELETE FROM holds WHERE id=" + holdID + ";";
+
+                ResultSet rs3 = stmt.executeQuery(queryGetOfferID);
+                String offerID = "";
+                while (rs3.next()) {
+                    offerID = rs3.getString("offerID");
                 }
                 // Remove sell offer if 0 amount
                 String queryEmptyOfferID = "SELECT * FROM orderbook WHERE offerID='" + offerID + "';";
-                Statement stmt2 = conn.createStatement();
-                ResultSet rs2 = stmt2.executeQuery(queryEmptyOfferID);
-                while (rs2.next()) {
-                    if (rs2.getDouble("amount") == 0.0) {
+                ResultSet rs4 = stmt.executeQuery(queryEmptyOfferID);
+                while (rs4.next()) {
+                    if (rs4.getDouble("amount") == 0.0) {
                         String deleteOfferID = "DELETE FROM orderbook WHERE offerID='" + offerID + "';";
                         PreparedStatement pstmt = conn.prepareStatement(deleteOfferID);
                         pstmt.executeUpdate();
@@ -286,6 +354,66 @@ public class MarketActorProtocol {
             } catch (Exception e) {
                 status = "exception";
                 errorMessage = e.toString();
+            }
+        }
+    }
+
+    // Enable DEBUG confirm_fail
+    public static class DebugConfirmFail {
+        String status;
+
+        public DebugConfirmFail(Database db) {
+            String updateDebugConfirmFail = "UPDATE debug SET value = 1 WHERE flag='confirm_fail';";
+
+            try {
+                Connection conn = db.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(updateDebugConfirmFail);
+                pstmt.executeUpdate();
+                status = "success";
+                // Close connection!
+                conn.close();
+            } catch (Exception e) {
+                status = "exception";
+            }
+        }
+    }
+
+    // Enable DEBUG confirm_fail
+    public static class DebugConfirmNoResponse {
+        String status;
+
+        public DebugConfirmNoResponse(Database db) {
+            String updateDebugConfirmNoResponse = "UPDATE debug SET value = 1 WHERE flag='confirm_no_response';";
+
+            try {
+                Connection conn = db.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(updateDebugConfirmNoResponse);
+                pstmt.executeUpdate();
+                status = "success";
+                // Close connection!
+                conn.close();
+            } catch (Exception e) {
+                status = "exception";
+            }
+        }
+    }
+
+    // Enable DEBUG confirm_fail
+    public static class DebugReset {
+        String status;
+
+        public DebugReset(Database db) {
+            String updateDebugReset = "UPDATE debug SET value = 0;";
+
+            try {
+                Connection conn = db.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(updateDebugReset);
+                pstmt.executeUpdate();
+                status = "success";
+                // Close connection!
+                conn.close();
+            } catch (Exception e) {
+                status = "exception";
             }
         }
     }

@@ -42,6 +42,7 @@ public class UserActor extends AbstractActor {
                 .match(AddBalanceBTC.class, this::addBalanceBTC)
                 .match(GetBalances.class, this::getBalances)
                 .match(RequestBuyTransaction.class, this::requestBuyTransaction)
+                .match(AddEventToLog.class, this::addEventToLog)
                 .build();
     }
 
@@ -102,12 +103,20 @@ public class UserActor extends AbstractActor {
         ObjectNode result = Json.newObject();
         result.put("status", requestBuyTransaction.status);
         // Error Handling
-        if (requestBuyTransaction.status.equals("error")) {
+        if (requestBuyTransaction.status.equals("exception")) {
+            result.put("errorMessage", requestBuyTransaction.errorMessage);
+        } else if (requestBuyTransaction.status.equals("error")) {
             result.put("errorMessage", requestBuyTransaction.errorMessage);
         } else {
             // result.put("offers", requestBuyTransaction.sellOffers);
             result.put("transactionID", requestBuyTransaction.transactionID);
         }
+        sender().tell(result, self());
+    }
+
+    private void addEventToLog(AddEventToLog addEventToLog) {
+        ObjectNode result = Json.newObject();
+        result.put("status", addEventToLog.status);
         sender().tell(result, self());
     }
 }

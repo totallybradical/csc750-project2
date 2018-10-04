@@ -220,33 +220,46 @@ public class UserActorProtocol {
                     double thisRate = purchaseBreakdown.get(i).get("rate").asDouble();
                     System.out.println("Request made to hold " + thisAmount + " BTC from offerID " + thisOfferID);
                     Future<Object> holdRequest = ask(marketActor, new MarketActorProtocol.CreateHold(db, thisOfferID, thisAmount, thisRate), 1000);
-                    try {
-                        ObjectNode holdRequestResponse = (ObjectNode) Await.result(holdRequest, waitTime);
-                        if (holdRequestResponse.get("status").asText().equals("success")) {
-                            // TODO: 6. If Step 5 Success, CONFIRM to MarketActor
-                            // Confirm sent for EACH HOLD
-                            int holdID = holdRequestResponse.get("holdID").asInt();
-                            System.out.println("Successful hold with ID: " + holdID);
-                            Future<Object> confirmHoldRequest = ask(marketActor, new MarketActorProtocol.ConfirmHold(db, holdID), 1000);
-                            try {
-                                ObjectNode confirmHoldRequestResponse = (ObjectNode) Await.result(confirmHoldRequest, waitTime);
-                                if (confirmHoldRequestResponse.get("status").asText().equals("success")) {
-                                    double purchaseCostUSD = thisAmount * thisRate;
-                                    amountPurchased += thisAmount;
-                                    totalCostUSD += purchaseCostUSD;
-                                    // Reduce user's USD balance by cost of purchase
-                                    ReduceBalanceUSD reducedBalanceUSD = new ReduceBalanceUSD(db, 1, purchaseCostUSD);
-                                    // Add BTC to user's BTC balance
-                                    AddBalanceBTC addBalanceBTC = new AddBalanceBTC(db, 1, thisAmount);
+                    ObjectNode holdRequestResponse = (ObjectNode) Await.result(holdRequest, waitTime);
+                    if (holdRequestResponse.get("status").asText().equals("success")) {
+                        // Log in eventslog
+                        AddEventToLog holdEvent = new AddEventToLog(db, "hold", "success");
+                        // TODO: 6. If Step 5 Success, CONFIRM to MarketActor
+                        // Confirm sent for EACH HOLD
+                        int holdID = holdRequestResponse.get("holdID").asInt();
+                        System.out.println("Successful hold with ID: " + holdID);
+                        Future<Object> confirmHoldRequest = ask(marketActor, new MarketActorProtocol.ConfirmHold(db, holdID), 1000);
+                        try {
+                            ObjectNode confirmHoldRequestResponse = (ObjectNode) Await.result(confirmHoldRequest, waitTime);
+                            if (confirmHoldRequestResponse.get("status").asText().equals("success")) {
+                                AddEventToLog confirmEvent = new AddEventToLog(db, "confirm", "success");
+                                double purchaseCostUSD = thisAmount * thisRate;
+                                amountPurchased += thisAmount;
+                                totalCostUSD += purchaseCostUSD;
+                                // Reduce user's USD balance by cost of purchase
+                                ReduceBalanceUSD reducedBalanceUSD = new ReduceBalanceUSD(db, 1, purchaseCostUSD);
+                                // Add BTC to user's BTC balance
+                                AddBalanceBTC addBalanceBTC = new AddBalanceBTC(db, 1, thisAmount);
+                            } else {
+                                status = "error";
+                                // If confirm hold returned an error message...
+                                AddEventToLog holdError = new AddEventToLog(db, "hold", "failure - error");
+                                if (confirmHoldRequestResponse.get("errorMessage").asText().length() > 0) {
+                                    errorMessage = confirmHoldRequestResponse.get("errorMessage").asText();
                                 }
-                            } catch (Exception e) {
-                                status = "exception";
-                                System.out.println(e.toString());
+                                Future<Object> removeHoldRequest = ask(marketActor, new MarketActorProtocol.RemoveHold(db, holdID), 1000);
+                                ObjectNode removeHoldRequestResponse = (ObjectNode) Await.result(removeHoldRequest, waitTime);
+                                return;
                             }
+                        } catch (Exception e) {
+                            status = "exception";
+                            errorMessage = e.toString();
+                            System.out.println("Hold confirmation timed out...");
+                            AddEventToLog holdTimeout = new AddEventToLog(db, "hold", "failure - timeout");
+                            Future<Object> removeHoldRequest = ask(marketActor, new MarketActorProtocol.RemoveHold(db, holdID), 1000);
+                            ObjectNode removeHoldRequestResponse = (ObjectNode) Await.result(removeHoldRequest, waitTime);
+                            return;
                         }
-                    } catch (Exception e) {
-                        status = "exception";
-                        System.out.println(e.toString());
                     }
                 }
                 // TODO: 7. Add Transaction to transactions
@@ -258,6 +271,7 @@ public class UserActorProtocol {
                 if (rs.next()) {
                     transactionID = rs.getInt(1);
                 }
+                AddEventToLog newTransaction = new AddEventToLog(db, "transaction", "success - ID: " + transactionID);
                 status = "success";
                 // Close connection!
                 conn.close();
@@ -268,6 +282,27 @@ public class UserActorProtocol {
 
 
             status = "success";
+        }
+    }
+
+    // Add event to eventslog
+    public static class AddEventToLog {
+        String status;
+
+        public AddEventToLog(Database db, String eventType, String notes) {
+            String insertEvent = "INSERT INTO eventslog(event_type,notes) VALUES ('" + eventType + "','" + notes + "');";
+
+            try {
+                Connection conn = db.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(insertEvent);
+                pstmt.executeUpdate();
+                // Report success
+                status = "success";
+                // Close connection!
+                conn.close();
+            } catch (Exception e) {
+                status = "exception";
+            }
         }
     }
 }
