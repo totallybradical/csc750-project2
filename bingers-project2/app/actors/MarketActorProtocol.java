@@ -43,9 +43,9 @@ public class MarketActorProtocol {
     public static class GetTransaction {
         String status;
         String errorMessage;
-        double amount; // If success transaction
-        double rate; // If success transaction
-        String message; // If failed transaction
+        double totalAmount; // If success
+        double totalCostUSD; // If success
+        String message; // If fail
 
         public GetTransaction(Database db, int transactionID) {
             status = "";
@@ -63,8 +63,8 @@ public class MarketActorProtocol {
                     } else {
                         // Report success
                         status = "success";
-                        amount = rs.getDouble("amount");
-                        rate = rs.getDouble("rate");
+                        totalAmount = rs.getDouble("totalAmount");
+                        totalCostUSD = rs.getDouble("totalCostUSD");
                     }
                 }
                 if (!status.equals("success") && !status.equals("error")) {
@@ -266,12 +266,12 @@ public class MarketActorProtocol {
                 while (rs.next()) {
                     offerID = rs.getString("offerID");
                 }
+                // Remove sell offer if 0 amount
                 String queryEmptyOfferID = "SELECT * FROM orderbook WHERE offerID='" + offerID + "';";
                 Statement stmt2 = conn.createStatement();
                 ResultSet rs2 = stmt2.executeQuery(queryEmptyOfferID);
                 while (rs2.next()) {
                     if (rs2.getDouble("amount") == 0.0) {
-                        // Remove empty sell offers
                         String deleteOfferID = "DELETE FROM orderbook WHERE offerID='" + offerID + "';";
                         PreparedStatement pstmt = conn.prepareStatement(deleteOfferID);
                         pstmt.executeUpdate();

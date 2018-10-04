@@ -1,2 +1,8 @@
-[0m[[0m[0minfo[0m] [0m[0m/Users/bingerso/GitHub-Projects/csc750-project2/bingers-project2/app/actors/UserActor.java: /Users/bingerso/GitHub-Projects/csc750-project2/bingers-project2/app/actors/UserActor.java uses or overrides a deprecated API.[0m
-[0m[[0m[0minfo[0m] [0m[0m/Users/bingerso/GitHub-Projects/csc750-project2/bingers-project2/app/actors/UserActor.java: Recompile with -Xlint:deprecation for details.[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/bingerso/GitHub-Projects/csc750-project2/bingers-project2/app/actors/UserActor.java:109:1: cannot find symbol[0m
+[0m[[0m[31merror[0m] [0m[0m  symbol:   variable amountPurchased[0m
+[0m[[0m[31merror[0m] [0m[0m  location: variable requestBuyTransaction of type actors.UserActorProtocol.RequestBuyTransaction[0m
+[0m[[0m[31merror[0m] [0m[0m            result.put("purchasedBTCAmount", requestBuyTransaction.amountPurchased);[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/bingerso/GitHub-Projects/csc750-project2/bingers-project2/app/actors/UserActor.java:110:1: cannot find symbol[0m
+[0m[[0m[31merror[0m] [0m[0m  symbol:   variable totalCostUSD[0m
+[0m[[0m[31merror[0m] [0m[0m  location: variable requestBuyTransaction of type actors.UserActorProtocol.RequestBuyTransaction[0m
+[0m[[0m[31merror[0m] [0m[0m            result.put("totalCostUSD", requestBuyTransaction.totalCostUSD);[0m

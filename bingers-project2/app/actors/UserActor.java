@@ -106,7 +106,7 @@ public class UserActor extends AbstractActor {
             result.put("errorMessage", requestBuyTransaction.errorMessage);
         } else {
             // result.put("offers", requestBuyTransaction.sellOffers);
-            result.putArray("purchaseBreakdown").addAll(requestBuyTransaction.purchaseBreakdown);
+            result.put("transactionID", requestBuyTransaction.transactionID);
         }
         sender().tell(result, self());
     }

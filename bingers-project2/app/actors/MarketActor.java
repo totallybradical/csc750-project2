@@ -66,8 +66,8 @@ public class MarketActor extends AbstractActor {
             result.put("message", getTransaction.message);
         } else if (getTransaction.status.equals("success")) {
             // If success transaction
-            result.put("amount", getTransaction.amount);
-            result.put("rate", getTransaction.rate);
+            result.put("totalAmount", getTransaction.totalAmount);
+            result.put("totalCostUSD", getTransaction.totalCostUSD);
         }
         sender().tell(result, self());
     }
